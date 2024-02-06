@@ -2,13 +2,15 @@ const Questions = require("../models/questionModal");
 
 const createQuestions = async (req, res) => {
   try {
-    const question = await Questions.findOne({ question: req.body.question })
-    if (question) {
+    const {question} = req.body
+    const existing = await Questions.findOne({ question: question })
+    if (existing) {
       res.status(400).json({ message: 'question already exists' })
       return
     }
     
-    const newQuestion = await Questions.create(req.body);
+    const newQuestion = new Questions({ question: question });
+    await newQuestion.save()
     res.status(201).json({ newQuestion });
   } catch (error) {
     console.log("something went wrong while creating a question");
